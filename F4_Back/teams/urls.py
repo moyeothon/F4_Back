@@ -7,7 +7,7 @@ urlpatterns = [
     path('teams/', TeamCreateAPIView.as_view(), name='team-create'),
 
     # 팀 참여
-    path('teams/<str:team_id>/join', TeamJoinAPIView.as_view(), name='team-join'),
+    path('teams/<str:team_id>/join/', TeamJoinAPIView.as_view(), name='team-join'),
 
     # 팀 정보 업데이트
     path('teams/<int:team_id>/', TeamUpdateAPIView.as_view(), name='team-update'),
