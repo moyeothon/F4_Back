@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'teams',
-    'questions'
+    'questions',
+    'test_app',
 ]
 
 MIDDLEWARE = [
