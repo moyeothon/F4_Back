@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-$ey!xii2f6nl&4dxr7dq3a31+r2+aaso%2uf*fi=9-l$pgd!+4'
-
+OPENAI_API_KEY = config('OPENAI_API_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'teams',
     'questions',
     'test_app',
+    'gpt',
 ]
 
 MIDDLEWARE = [
