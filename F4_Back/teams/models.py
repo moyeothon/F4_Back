@@ -11,6 +11,7 @@ class Profile(models.Model):
         ('design', '디자인'),
     ]
     user_name = models.CharField(max_length=50)
+    birth_date = models.DateField(null=True, blank=True)
     age = models.IntegerField()
     mbti = models.CharField(max_length=4)
     affiliations = models.CharField(max_length=100)
