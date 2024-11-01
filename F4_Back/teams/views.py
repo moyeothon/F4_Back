@@ -1,7 +1,8 @@
-from rest_framework import APIView
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Team, Profile, Question, Answer
+from .models import Team, Profile
+# from questions.models import Question
 from .serializers import TeamSerializer, ProfileSerializer
 from django.shortcuts import get_object_or_404
 
