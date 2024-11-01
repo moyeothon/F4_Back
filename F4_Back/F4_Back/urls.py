@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('teams.urls')),
     path('', include('questions.urls')),
     path('', include('test_app.urls')),
+    path('', include('gpt.urls'))
 ]
