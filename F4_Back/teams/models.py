@@ -14,7 +14,7 @@ class Profile(models.Model):
     ]
     user_name = models.CharField(max_length=50)
     birth_date = models.DateField(null=True, blank=True)
-    age = models.IntegerField()
+    age = models.IntegerField(null=True, blank=True)
     mbti = models.CharField(max_length=4)
     affiliations = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
