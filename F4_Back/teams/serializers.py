@@ -3,10 +3,11 @@ from .models import Team, Profile
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
-        medel = Team
+        model = Team
         fields = ['id', 'member_count']
 
 class ProfileSerializer(serializers.ModelSerializer):
+    team = TeamSerializer()
     class Meta:
         model = Profile
         fields = [
@@ -17,5 +18,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             'mbti',
             'affiliations',
             'location',
-            'participation_field'
+            'participation_field',
+            'team'
         ]

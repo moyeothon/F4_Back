@@ -20,6 +20,6 @@ class Profile(models.Model):
         max_length=20,
         choices=PARTICIPATION_CHOICES
     )
-
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='profiles')
     def __str__(self):
         return self.user_name

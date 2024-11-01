@@ -19,7 +19,7 @@ class TeamJoinAPIView(APIView):
         team = get_object_or_404(Team, id=team_id)
         profile_serializer = ProfileSerializer(data=request.data)
         if profile_serializer.is_valid():
-            profile_serializer.save()
+            profile_serializer.save(team=team)
             return Response({"message": "Profile created successfully"}, status=status.HTTP_201_CREATED)
         return Response(profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -43,13 +43,13 @@ class ProfileCreateAPIView(APIView):
         team = get_object_or_404(Team, id=team_id)
         serializer = ProfileSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(team=team)
             return Response({"Profile_id": serializer.data["id"], "message": "Profile created successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileDetailAPIView(APIView):
     def get(self, request, team_id, profile_id):
-        profile = get_object_or_404(Profile, id=profile_id)
+        profile = get_object_or_404(Profile, id=profile_id, team_id=team_id)
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
