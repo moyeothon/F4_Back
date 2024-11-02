@@ -4,6 +4,9 @@ from rest_framework import status
 import openai
 from django.conf import settings
 import os
+from  teams.models import ProfileQuestionAnswer
+from teams.serializers import ProfileQuestionAnswerSerializer
+from rest_framework.permissions import AllowAny
 
 openai.api_key = settings.OPENAI_API_KEY
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,12 +19,18 @@ def load_message(filename):
 system_content = load_message("system_message.txt")
 user_content = load_message("user_message.txt")
 assistant_content_example = load_message("assistant_message.txt")
-class GPTAPIView(APIView):
-    def post(self, request):
-        user_content = request.data.get("user_content")
 
-        if not user_content:
-            return Response({'error': "내용이 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+class GPTAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        queryset = ProfileQuestionAnswer.objects.all()
+
+        serializer = ProfileQuestionAnswerSerializer(queryset, many=True)
+        data = serializer.data
+        
+        data_str = str(data)
         
         try:
             response = openai.ChatCompletion.create(
