@@ -155,24 +155,20 @@ class ProfileUpdateAPIView(generics.UpdateAPIView):
 class ProfileQuestionAnswerCreateAPIView(APIView):
     serializer_class = ProfileQuestionAnswerSerializer
     permission_classes = [AllowAny]
+
     def post(self, request, team_id, profile_id):
         # 프로필을 조회하여 존재하는지 확인
         profile = get_object_or_404(Profile, id=profile_id, team__id=team_id)
         
-        # 요청 데이터를 받아 여러 질문-답변 쌍 생성
-        data = request.data.get('answers', [])
-        response_data = []
+        # 단일 질문-답변 쌍 처리
+        serializer = ProfileQuestionAnswerSerializer(data={
+            "profile": profile.id,
+            "question_id": request.data.get("question_id"),
+            "answer_id": request.data.get("answer_id")
+        })
         
-        for answer in data:
-            serializer = ProfileQuestionAnswerSerializer(data={
-                "profile": profile.id,
-                "question_id": answer["question_id"],
-                "answer_id": answer["answer_id"]
-            })
-            if serializer.is_valid():
-                serializer.save()
-                response_data.append(serializer.data)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Answer saved successfully", "data": serializer.data}, status=status.HTTP_201_CREATED)
         
-        return Response({"message": "Answers saved successfully", "data": response_data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
