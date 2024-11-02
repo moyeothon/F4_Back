@@ -10,7 +10,7 @@ class Question(models.Model):
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answer')
-    user_name = models.CharField(max_length=50)
+    user_name = models.CharField(max_length=50) #유저네임 어떻게 가져올건데
     selected_option = models.CharField(max_length=1, choices=[('A', 'Option A'),('B', 'Option B')])
 
     def __str__(self):
