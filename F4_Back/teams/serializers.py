@@ -101,4 +101,4 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 class ProfileQuestionAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileQuestionAnswer
-        fields = ['profile', 'question_id', 'answer_id']
+        fields = ['profile', 'team', 'question_id', 'answer_id']
