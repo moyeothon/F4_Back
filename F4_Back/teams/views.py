@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Team, Profile
+from .models import Team, Profile, ProfileQuestionAnswer
 # from questions.models import Question
-from .serializers import TeamSerializer, ProfileSerializer, LoginSerializer, ProfileUpdateSerializer
+from .serializers import TeamSerializer, ProfileSerializer, LoginSerializer, ProfileUpdateSerializer, ProfileQuestionAnswerSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import generics
@@ -144,3 +144,26 @@ class ProfileUpdateAPIView(generics.UpdateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileQuestionAnswerCreateAPIView(APIView):
+    def post(self, request, profile_id):
+        # 프로필을 조회하여 존재하는지 확인
+        profile = Profile.objects.get(id=profile_id)
+        
+        # 요청 데이터를 받아 여러 질문-답변 쌍 생성
+        data = request.data.get('answers', [])
+        response_data = []
+        
+        for answer in data:
+            serializer = ProfileQuestionAnswerSerializer(data={
+                "profile": profile.id,
+                "question_id": answer["question_id"],
+                "answer_id": answer["answer_id"]
+            })
+            if serializer.is_valid():
+                serializer.save()
+                response_data.append(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({"message": "Answers saved successfully", "data": response_data}, status=status.HTTP_201_CREATED)

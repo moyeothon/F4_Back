@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Team, Profile
+from .models import Team, Profile, ProfileQuestionAnswer
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
@@ -97,3 +97,8 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             'communication_style'
         ]
         extra_kwargs = {field: {'required': False} for field in fields}
+
+class ProfileQuestionAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileQuestionAnswer
+        fields = ['profile', 'question_id', 'answer_id']
