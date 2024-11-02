@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TeamCreateAPIView, TeamJoinAPIView, TeamUpdateAPIView, TeamDetailAPIView, ProfileCreateAPIView, ProfileDetailAPIView, TeamLoginOrRegisterAPIView
+from .views import TeamCreateAPIView, TeamJoinAPIView, TeamUpdateAPIView, TeamDetailAPIView, ProfileCreateAPIView, ProfileDetailAPIView, TeamLoginOrRegisterAPIView, TeamProfilesAPIView, ProfileUpdateAPIView
 
 urlpatterns = [
 
@@ -15,8 +15,14 @@ urlpatterns = [
     # 팀 정보 조회
     path('teams/<uuid:team_id>/', TeamDetailAPIView.as_view(), name='team-detail'),
 
+    #팀원 정보 전체 조회
+    path('teams/<uuid:team_id>/profiles/', TeamProfilesAPIView.as_view(), name='team-profiles'),
+
     # 프로필 생성
     path('teams/<uuid:team_id>/profile/', ProfileCreateAPIView.as_view(), name='profile-create'),
+
+    # 팀 
+    path('teams/<uuid:team_id>/profile/update/', ProfileUpdateAPIView.as_view(), name='profile-update'),
 
     # 프로필 조회
     path('teams/<uuid:team_id>/profile/<int:profile_id>/', ProfileDetailAPIView.as_view(), name='profile-detail'),
