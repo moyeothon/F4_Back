@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Team, Profile
 # from questions.models import Question
-from .serializers import TeamSerializer, ProfileSerializer
+from .serializers import TeamSerializer, ProfileSerializer, LoginSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class TeamCreateAPIView(APIView):
     def post(self,request):
@@ -53,7 +54,36 @@ class ProfileDetailAPIView(APIView):
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
+class TeamLoginOrRegisterAPIView(APIView):
+    def post(self, request, team_id):
+        team = get_object_or_404(Team, id=team_id)
+        name = request.data.get("name")
+        dob = request.data.get("dob")
 
+        # 팀 내에서 이름과 생년월일로 사용자 조회
+        profile = Profile.objects.filter(team=team, user_name=name, birth_date=dob).first()
 
+        if profile:
+            # 로그인 성공, 토큰 발급
+            refresh = RefreshToken.for_user(profile)
+            return Response({
+                "message": "Login successful",
+                "profile_id": profile.id,
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh)
+            }, status=status.HTTP_200_OK)
+        else:
+            # 회원가입 및 로그인 처리
+            login_serializer = LoginSerializer(data={"team": team.id, "user_name": name, "birth_date": dob})
+            if login_serializer.is_valid():
+                profile = login_serializer.save()
 
-
+                # 토큰 발급
+                refresh = RefreshToken.for_user(profile)
+                return Response({
+                    "message": "Registered and logged in",
+                    "profile_id": login_serializer.data["id"],
+                    "access_token": str(refresh.access_token),
+                    "refresh_token": str(refresh)
+                }, status=status.HTTP_201_CREATED)
+            return Response(login_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
