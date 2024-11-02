@@ -6,7 +6,7 @@ from django.conf import settings
 
 openai.api_key = settings.OPENAI_API_KEY
 
-class GPRAPIView(APIView):
+class GPTAPIView(APIView):
     def post(self, request):
         user_input = request.data.get("question")
 
