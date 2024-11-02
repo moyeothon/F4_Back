@@ -22,7 +22,7 @@ urlpatterns = [
     path('teams/<uuid:team_id>/profile/', ProfileCreateAPIView.as_view(), name='profile-create'),
 
     # 프로필 업데이트
-    path('teams/<uuid:team_id>/profile/update/', ProfileUpdateAPIView.as_view(), name='profile-update'),
+    path('teams/<uuid:team_id>/profile/<int:profile_id>/update/', ProfileUpdateAPIView.as_view(), name='profile-update'),
 
     # 프로필 조회
     path('teams/<uuid:team_id>/profile/<int:profile_id>/', ProfileDetailAPIView.as_view(), name='profile-detail'),

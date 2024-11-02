@@ -10,6 +10,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 class TeamCreateAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self,request):
         serializer = TeamSerializer(data=request.data)
         if serializer.is_valid():
@@ -18,6 +19,7 @@ class TeamCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class TeamJoinAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, team_id):
         team = get_object_or_404(Team, id=team_id)
         profile_serializer = ProfileSerializer(data=request.data)
@@ -27,6 +29,7 @@ class TeamJoinAPIView(APIView):
         return Response(profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class TeamUpdateAPIView(APIView):
+    permission_classes = [AllowAny]
     def put(self, request, team_id):
         team = get_object_or_404(Team, id=team_id)
         serializer = TeamSerializer(team, data=request.data, partial=True)
@@ -42,6 +45,7 @@ class TeamDetailAPIView(APIView):
         return Response(serializer.data)
     
 class ProfileCreateAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, team_id):
         team = get_object_or_404(Team, id=team_id)
         serializer = ProfileSerializer(data=request.data)
@@ -51,12 +55,14 @@ class ProfileCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileDetailAPIView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, team_id, profile_id):
         profile = get_object_or_404(Profile, id=profile_id, team_id=team_id)
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
 class TeamLoginOrRegisterAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, team_id):
         team = get_object_or_404(Team, id=team_id)
         name = request.data.get("name")
@@ -83,7 +89,7 @@ class TeamLoginOrRegisterAPIView(APIView):
                 "team": team.id, 
                 "user_name": name, 
                 "birth_date": dob, 
-                "role": "team leader" if is_leader else "member"
+                "role": "team_leader" if is_leader else "team_member"
                 })
             if login_serializer.is_valid():
                 profile = login_serializer.save()
@@ -128,17 +134,18 @@ class TeamProfilesAPIView(generics.ListAPIView):
 
 class ProfileUpdateAPIView(generics.UpdateAPIView):
     serializer_class = ProfileUpdateSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_object(self):
-        # 현재 로그인한 사용자 프로필 반환
-        return Profile.objects.get(id=self.request.user.profile.id)
+        # URL에서 전달된 profile_id를 사용해 프로필 조회
+        profile_id = self.kwargs['profile_id']
+        return Profile.objects.get(id=profile_id)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        
+
         # 유효성 검사 및 저장
         if serializer.is_valid():
             serializer.save()
@@ -146,9 +153,11 @@ class ProfileUpdateAPIView(generics.UpdateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileQuestionAnswerCreateAPIView(APIView):
-    def post(self, request, profile_id):
+    serializer_class = ProfileQuestionAnswerSerializer
+    permission_classes = [AllowAny]
+    def post(self, request, team_id, profile_id):
         # 프로필을 조회하여 존재하는지 확인
-        profile = Profile.objects.get(id=profile_id)
+        profile = get_object_or_404(Profile, id=profile_id, team__id=team_id)
         
         # 요청 데이터를 받아 여러 질문-답변 쌍 생성
         data = request.data.get('answers', [])

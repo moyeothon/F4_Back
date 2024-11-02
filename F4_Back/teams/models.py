@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 import uuid
 
 class Team(models.Model):
@@ -68,13 +69,13 @@ class Profile(models.Model):
     stack = models.CharField(max_length=200, null=True, blank=True)  # 기술 스택
     
     # IntegerField로 선택 필드 추가
-    preferred_os = models.IntegerField(choices=OS_CHOICES)
-    editor_mode = models.IntegerField(choices=EDITOR_MODE_CHOICES)
-    work_environment = models.IntegerField(choices=WORK_ENV_CHOICES)
-    collaboration_environment = models.IntegerField(choices=COLLAB_ENV_CHOICES)
-    focus_time = models.IntegerField(choices=FOCUS_TIME_CHOICES)
-    project_style = models.IntegerField(choices=PROJECT_STYLE_CHOICES)
-    communication_style = models.IntegerField(choices=COMMUNICATION_STYLE_CHOICES)
+    preferred_os = models.IntegerField(choices=OS_CHOICES, default=1 )
+    editor_mode = models.IntegerField(choices=EDITOR_MODE_CHOICES, default=1)
+    work_environment = models.IntegerField(choices=WORK_ENV_CHOICES, default=1)
+    collaboration_environment = models.IntegerField(choices=COLLAB_ENV_CHOICES, default=1)
+    focus_time = models.IntegerField(choices=FOCUS_TIME_CHOICES, default=1)
+    project_style = models.IntegerField(choices=PROJECT_STYLE_CHOICES, default=1)
+    communication_style = models.IntegerField(choices=COMMUNICATION_STYLE_CHOICES, default=1)
 
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='profiles')
     def __str__(self):
