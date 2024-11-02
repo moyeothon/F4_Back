@@ -31,20 +31,34 @@ class GPTAPIView(APIView):
         data = serializer.data
         
         data_str = str(data)
-        
+        prompt = f"{system_content}\nUser input: {user_content}\nAssistant example: {assistant_content_example}\nUser data:\n{data}"
+
+        # ChatCompletion 용 메시지 생성
+        messages = [
+            {"role": "system", "content": system_content},
+            {"role": "user", "content": user_content},
+            {"role": "assistant", "content": assistant_content_example},
+            {"role": "user", "content": f"User data:\n{data}"}
+        ]
         try:
-            response = openai.ChatCompletion.create(
+            response = openai.chat.completions.create(
+                # model="gpt-4",
                 model ="gpt-3.5-turbo",
-                messages = [
-                    {"role":"system", "content": system_content},
-                    {"role":"user", "content": user_content},
-                    {"role":"assistant", "content": assistant_content_example}
-                ],
+                # model="text-davinci-003",  # GPT-3 모델 지정
+                # messages = [
+                #     {"role":"system", "content": system_content},
+                #     {"role":"user", "content": user_content},
+                #     {"role":"assistant", "content": assistant_content_example}
+                # ],
+                # prompt=prompt,
+                messages=messages,
                 max_tokens=500,
                 temperature=0.7
             )
 
-            answer = response.choices[0].message['content']
+            # answer = response.choices[0].message['content']
+            # return Response({"answer": answer}, status=status.HTTP_200_OK)
+            answer = response.choices[0].message.content.strip()
             return Response({"answer": answer}, status=status.HTTP_200_OK)
         
         except Exception as e:
