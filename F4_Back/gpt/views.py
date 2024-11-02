@@ -6,22 +6,33 @@ from django.conf import settings
 
 openai.api_key = settings.OPENAI_API_KEY
 
+def load_message(filename):
+    with open(filename, 'r', encoding='utf-8') as file:
+        return file.read()
+    
+system_content = load_message("system_message.txt")
+user_content = load_message("user_message.txt")
+assistant_content_example = load_message("assistant_message.txt")
 class GPTAPIView(APIView):
     def post(self, request):
-        user_input = request.data.get("question")
+        user_content = request.data.get("user_content")
 
-        if not user_input:
-            return Response({'error': "질문이 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
+        if not user_content:
+            return Response({'error': "내용이 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            response = openai.Completion.create(
-                engine ="text-davinci-003",
-                prompt=user_input,
-                max_tokens=100,
-                temperature=0.5,
+            response = openai.ChatCompletion.create(
+                model ="gpt-3.5-turbo",
+                messages = [
+                    {"role":"system", "content": system_content},
+                    {"role":"user", "content": user_content},
+                    {"role":"assistant", "content": assistant_content_example}
+                ],
+                max_tokens=500,
+                temperature=0.7
             )
 
-            answer = response.choices[0].text.strip()
+            answer = response.choices[0].message['content']
             return Response({"answer": answer}, status=status.HTTP_200_OK)
         
         except Exception as e:

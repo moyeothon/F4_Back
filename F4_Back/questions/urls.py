@@ -3,7 +3,7 @@ from .views import QuestionListAPIView, AnswerCreateAPIView, UserAnswerListAPIVi
 
 urlpatterns = [
     # 질문 가져오기, 질문 추가하기
-    path('questions/', QuestionListAPIView.as_view(), name='question-list'),
+    path('questions/', QuestionListAPIView.as_view(), name='question-list'), #필요없쪄
 
     # 응답 저장
     path('questions/answer/', AnswerCreateAPIView.as_view(), name='answer-create'),
