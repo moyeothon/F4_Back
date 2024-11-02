@@ -73,7 +73,7 @@ class TeamLoginOrRegisterAPIView(APIView):
 
         if profile:
             # 로그인 성공, 토큰 발급
-            refresh = RefreshToken.for_user(profile.user)
+            refresh = RefreshToken.for_user(profile)
             return Response({
                 "message": "Login successful",
                 "profile_id": profile.id,
