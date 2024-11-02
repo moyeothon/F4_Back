@@ -3,11 +3,14 @@ from rest_framework.response import Response
 from rest_framework import status
 import openai
 from django.conf import settings
+import os
 
 openai.api_key = settings.OPENAI_API_KEY
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def load_message(filename):
-    with open(filename, 'r', encoding='utf-8') as file:
+    file_path = os.path.join(BASE_DIR, 'gpt', filename)
+    with open(file_path, 'r', encoding='utf-8') as file:
         return file.read()
     
 system_content = load_message("system_message.txt")
