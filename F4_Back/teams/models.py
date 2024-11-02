@@ -124,6 +124,7 @@ class ProfileQuestionAnswer(models.Model):
     }
 
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='question_answers')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)  # team 필드 추가
     question_id = models.IntegerField(choices=QUESTION_CHOICES)  # 질문 선택
     answer_id = models.IntegerField()  # 답변 선택
 

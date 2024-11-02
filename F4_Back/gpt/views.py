@@ -24,8 +24,8 @@ assistant_content_example = load_message("assistant_message.txt")
 class GPTAPIView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
-        queryset = ProfileQuestionAnswer.objects.all()
+    def get(self, request, team_id):
+        queryset = ProfileQuestionAnswer.objects.filter(team_id=team_id)
 
         serializer = ProfileQuestionAnswerSerializer(queryset, many=True)
         data = serializer.data

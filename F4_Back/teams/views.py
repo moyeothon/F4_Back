@@ -65,15 +65,15 @@ class TeamLoginOrRegisterAPIView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, team_id):
         team = get_object_or_404(Team, id=team_id)
-        name = request.data.get("name")
-        dob = request.data.get("dob")
+        user_name = request.data.get("user_name")  # 여기서 name 대신 user_name 사용
+        birth_date = request.data.get("birth_date")  # 여기서 dob 대신 birth_date 사용
 
         # 팀 내에서 이름과 생년월일로 사용자 조회
-        profile = Profile.objects.filter(team=team, user_name=name, birth_date=dob).first()
+        profile = Profile.objects.filter(team=team, user_name=user_name, birth_date=birth_date).first()
 
         if profile:
             # 로그인 성공, 토큰 발급
-            refresh = RefreshToken.for_user(profile)
+            refresh = RefreshToken.for_user(profile.user)
             return Response({
                 "message": "Login successful",
                 "profile_id": profile.id,
@@ -87,15 +87,15 @@ class TeamLoginOrRegisterAPIView(APIView):
             # 회원가입 및 로그인 처리
             login_serializer = LoginSerializer(data={
                 "team": team.id, 
-                "user_name": name, 
-                "birth_date": dob, 
+                "user_name": user_name, 
+                "birth_date": birth_date, 
                 "role": "team_leader" if is_leader else "team_member"
-                })
+            })
             if login_serializer.is_valid():
                 profile = login_serializer.save()
 
                 # 토큰 발급
-                refresh = RefreshToken.for_user(profile)
+                refresh = RefreshToken.for_user(profile.user)
                 return Response({
                     "message": "Registered and logged in",
                     "profile_id": login_serializer.data["id"],
@@ -158,11 +158,13 @@ class ProfileQuestionAnswerCreateAPIView(APIView):
 
     def post(self, request, team_id, profile_id):
         # 프로필을 조회하여 존재하는지 확인
+        team = get_object_or_404(Team, id=team_id)
         profile = get_object_or_404(Profile, id=profile_id, team__id=team_id)
         
         # 단일 질문-답변 쌍 처리
         serializer = ProfileQuestionAnswerSerializer(data={
             "profile": profile.id,
+            "team": team.id,  # team 필드에 team_id 설정
             "question_id": request.data.get("question_id"),
             "answer_id": request.data.get("answer_id")
         })
